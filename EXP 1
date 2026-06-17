@@ -1,0 +1,36 @@
+# FIND-S Algorithm
+
+def find_s(training_data):
+    # Initialize hypothesis with the first positive example
+    hypothesis = None
+
+    for sample in training_data:
+        attributes = sample[:-1]  # Features
+        target = sample[-1]       # Class label
+
+        if target == "Yes":  # Consider only positive examples
+            if hypothesis is None:
+                hypothesis = attributes.copy()
+            else:
+                for i in range(len(hypothesis)):
+                    if hypothesis[i] != attributes[i]:
+                        hypothesis[i] = "?"
+
+    return hypothesis
+
+
+# Training Data
+training_data = [
+    ["Sunny", "Warm", "Normal", "Strong", "Warm", "Same", "Yes"],
+    ["Sunny", "Warm", "High",   "Strong", "Warm", "Same", "Yes"],
+    ["Rainy", "Cold", "High",   "Strong", "Warm", "Change", "No"],
+    ["Sunny", "Warm", "High",   "Strong", "Cool", "Change", "Yes"]
+]
+
+# Run FIND-S
+final_hypothesis = find_s(training_data)
+
+# Display output
+print("Final Hypothesis:")
+for i, value in enumerate(final_hypothesis, start=1):
+    print(f"{i}. {value}")
