@@ -1,0 +1,61 @@
+import pandas as pd
+from sklearn.preprocessing import LabelEncoder
+from sklearn.tree import DecisionTreeClassifier, export_text
+
+# Dataset
+data = {
+    'Outlook': ['Sunny','Sunny','Overcast','Rain','Rain','Rain',
+                'Overcast','Sunny','Sunny','Rain','Sunny',
+                'Overcast','Overcast','Rain'],
+    'Temperature': ['Hot','Hot','Hot','Mild','Cool','Cool',
+                    'Cool','Mild','Cool','Mild','Mild',
+                    'Mild','Hot','Mild'],
+    'Humidity': ['High','High','High','High','Normal','Normal',
+                 'Normal','High','Normal','Normal','Normal',
+                 'High','Normal','High'],
+    'Wind': ['Weak','Strong','Weak','Weak','Weak','Strong',
+             'Strong','Weak','Weak','Weak','Strong',
+             'Strong','Weak','Strong'],
+    'PlayTennis': ['No','No','Yes','Yes','Yes','No',
+                   'Yes','No','Yes','Yes','Yes',
+                   'Yes','Yes','No']
+}
+
+df = pd.DataFrame(data)
+
+# Encode categorical data
+le = LabelEncoder()
+encoded_df = df.copy()
+
+for col in encoded_df.columns:
+    encoded_df[col] = le.fit_transform(encoded_df[col])
+
+X = encoded_df.drop('PlayTennis', axis=1)
+y = encoded_df['PlayTennis']
+
+# Build Decision Tree (ID3 uses entropy)
+clf = DecisionTreeClassifier(criterion='entropy')
+clf.fit(X, y)
+
+# Display tree
+print("Decision Tree:\n")
+print(export_text(clf, feature_names=list(X.columns)))
+
+# New sample
+new_sample = pd.DataFrame({
+    'Outlook':['Sunny'],
+    'Temperature':['Cool'],
+    'Humidity':['High'],
+    'Wind':['Strong']
+})
+
+# Encode new sample
+for col in new_sample.columns:
+    encoder = LabelEncoder()
+    encoder.fit(df[col])
+    new_sample[col] = encoder.transform(new_sample[col])
+
+prediction = clf.predict(new_sample)
+
+print("\nPrediction for New Sample:")
+print("Play Tennis =", "Yes" if prediction[0] == 1 else "No")
