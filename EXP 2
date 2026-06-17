@@ -1,0 +1,61 @@
+import csv
+
+# Read data from CSV file
+data = []
+with open('trainingdata.csv', 'r') as f:
+    reader = csv.reader(f)
+    header = next(reader)
+    for row in reader:
+        data.append(row)
+
+num_attr = len(data[0]) - 1
+
+# Initialize S and G
+S = ['0'] * num_attr
+G = [['?'] * num_attr]
+
+for row in data:
+    attributes = row[:-1]
+    target = row[-1]
+
+    if target == 'Yes':  # Positive Example
+
+        # Initialize S with first positive example
+        if S == ['0'] * num_attr:
+            S = attributes.copy()
+
+        # Generalize S
+        for i in range(num_attr):
+            if S[i] != attributes[i]:
+                S[i] = '?'
+
+        # Remove hypotheses from G inconsistent with positive example
+        G = [g for g in G if all(
+            g[i] == '?' or g[i] == attributes[i]
+            for i in range(num_attr)
+        )]
+
+    else:  # Negative Example
+
+        new_G = []
+
+        for g in G:
+            if all(g[i] == '?' or g[i] == attributes[i]
+                   for i in range(num_attr)):
+
+                for i in range(num_attr):
+                    if S[i] != '?' and S[i] != attributes[i]:
+                        h = g.copy()
+                        h[i] = S[i]
+                        new_G.append(h)
+            else:
+                new_G.append(g)
+
+        G = new_G
+
+print("\nSpecific Boundary S:")
+print(S)
+
+print("\nGeneral Boundary G:")
+for g in G:
+    print(g)
