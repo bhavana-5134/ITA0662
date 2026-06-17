@@ -1,0 +1,42 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
+
+# Sample dataset (Mobile features)
+data = {
+    'RAM': [1, 2, 3, 4, 6, 8],
+    'Storage': [16, 32, 64, 128, 128, 256],
+    'Battery': [2000, 3000, 4000, 4500, 5000, 6000],
+    'Price_Class': [0, 0, 1, 2, 2, 3]
+}
+
+df = pd.DataFrame(data)
+
+# Input and output
+X = df[['RAM', 'Storage', 'Battery']]
+y = df['Price_Class']
+
+# Split dataset
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=0
+)
+
+# Model
+model = LogisticRegression(max_iter=200)
+
+# Train model
+model.fit(X_train, y_train)
+
+# Predict
+y_pred = model.predict(X_test)
+
+# Output
+print("Predicted Mobile Price Class:", y_pred)
+print("Accuracy:", accuracy_score(y_test, y_pred) * 100, "%")
+
+# Predict for new mobile
+new_mobile = [[6, 128, 5000]]
+prediction = model.predict(new_mobile)
+
+print("New Mobile Price Class:", prediction[0])
